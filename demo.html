@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Quest - Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        wellness: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            primary: '#4CAF50',
+                            secondary: '#2196F3',
+                            heart: '#E91E63',
+                            background: '#F5F9F6'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .wellness-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            border: 1px solid #dcfce7;
+            padding: 1.5rem;
+        }
+        
+        .wellness-button {
+            background: #22c55e;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .wellness-button:hover:not(:disabled) {
+            background: #16a34a;
+            transform: scale(1.05);
+        }
+        
+        .wellness-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .pet-container {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .mission-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .mission-card:hover {
+            border-color: #86efac;
+            box-shadow: 0 4px 12px -4px rgb(34 197 94 / 0.25);
+        }
+        
+        .mission-card.completed {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 0.75rem;
+            background: #e5e7eb;
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            border-radius: 9999px;
+            transition: width 0.8s ease-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bounce {
+            animation: bounce 0.5s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .wiggle {
+            animation: wiggle 0.5s ease-in-out;
+        }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-3deg); }
+            75% { transform: rotate(3deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-wellness-50 to-wellness-100">
+    <!-- Onboarding Screen -->
+    <div id="onboarding" class="min-h-screen flex flex-col p-4">
+        <div class="max-w-md mx-auto w-full">
+            <!-- Header -->
+            <div class="text-center py-6">
+                <h1 class="text-3xl font-bold text-wellness-800 mb-2">Wellness Quest</h1>
+                <p class="text-wellness-600">Tu compañero de bienestar personalizado</p>
+            </div>
+            
+            <!-- Progress -->
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-wellness-600">Configuración inicial</span>
+                    <span class="text-sm text-wellness-600" id="step-counter">1 de 4</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="onboarding-progress" style="width: 25%;"></div>
+                </div>
+            </div>
+            
+            <!-- Question Card -->
+            <div class="wellness-card fade-in" id="question-card">
+                <div class="text-center mb-8">
+                    <div class="text-6xl mb-4" id="question-icon">🎯</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2" id="question-title">
+                        ¿Cuál es tu objetivo principal?
+                    </h2>
+                    <p class="text-gray-600" id="question-subtitle">
+                        Elige el área que más te interesa mejorar
+                    </p>
+                </div>
+                
+                <!-- Options -->
+                <div class="space-y-4" id="options-container">
+                    <button class="option-btn w-full p-4 rounded-xl border-2 border-gray-200 text-left hover:border-wellness-300 hover:bg-gray-50 transition-all" data-value="energy">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">⚡</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Más energía</h3>
+                                <p class="text-sm text-gray-600 mt-1">Sentirte más activo/a durante el día</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button class="option-btn w-full p-4 rounded-xl border-2 border-gray-200 text-left hover:border-wellness-300 hover:bg-gray-50 transition-all" data-value="stress">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">🧘</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Menos estrés</h3>
+                                <p class="text-sm text-gray-600 mt-1">Encontrar momentos de calma y relajación</p>
+                            </div>
+                        </div>
+                    </button>
+                    <button class="option-btn w-full p-4 rounded-xl border-2 border-gray-200 text-left hover:border-wellness-300 hover:bg-gray-50 transition-all" data-value="movement">
+                        <div class="flex items-start space-x-3">
+                            <span class="text-2xl">🏃</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Más movimiento</h3>
+                                <p class="text-sm text-gray-600 mt-1">Incorporar actividad física regular</p>
+                            </div>
+                        </div>
+                    </button>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex justify-between mt-8">
+                    <button id="prev-btn" class="text-wellness-600 px-4 py-2 rounded-lg hover:bg-wellness-50 transition-all opacity-50 cursor-not-allowed" disabled>
+                        ← Anterior
+                    </button>
+                    <button id="next-btn" class="wellness-button opacity-50 cursor-not-allowed" disabled>
+                        Siguiente →
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Home Screen -->
+    <div id="home" class="min-h-screen p-4 hidden">
+        <div class="max-w-md mx-auto space-y-6">
+            <!-- Header -->
+            <header class="text-center py-4">
+                <h1 class="text-3xl font-bold text-wellness-800 mb-2">¡Hola! 👋</h1>
+                <p class="text-wellness-600">Es hora de cuidar tu bienestar</p>
+            </header>
+
+            <!-- Stats -->
+            <div class="wellness-card flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-wellness-heart text-2xl">💖</span>
+                    <span class="font-semibold text-lg" id="hearts-count">2</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">📅</span>
+                    <span class="text-wellness-800">1 día</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🏆</span>
+                    <span class="text-wellness-800" id="total-missions">0</span>
+                </div>
+            </div>
+
+            <!-- Pet Section -->
+            <div class="wellness-card">
+                <h2 class="text-xl font-semibold text-wellness-800 mb-4">Tu compañero de bienestar</h2>
+                <div class="pet-container" id="pet-container">
+                    <div class="text-8xl mb-4" id="pet-emoji">😺</div>
+                    <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
+                        <p class="text-sm text-gray-700" id="pet-message">
+                            Hola! Soy tu compañero de bienestar 😊
+                        </p>
+                    </div>
+                    <div class="absolute top-4 right-4 flex space-x-1" id="hearts-display">
+                        <span class="text-2xl">💖</span>
+                        <span class="text-2xl">💖</span>
+                        <span class="text-2xl opacity-30">💖</span>
+                    </div>
+                </div>
+                <button id="feed-pet-btn" class="wellness-button mt-4">
+                    💖 Alimentar mascota
+                </button>
+            </div>
+
+            <!-- Progress -->
+            <div class="wellness-card">
+                <h2 class="text-xl font-semibold text-wellness-800 mb-4 flex items-center">
+                    <span class="mr-2">✨</span>
+                    Progreso de hoy
+                </h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm font-medium text-gray-700" id="progress-text">0 de 3 misiones completadas</span>
+                        <span class="text-sm font-bold text-wellness-600" id="progress-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="daily-progress" style="width: 0%;"></div>
+                    </div>
+                    <p class="text-center text-sm font-medium text-gray-600" id="motivational-message">
+                        🚀 ¡Comienza tu día de bienestar!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Missions -->
+            <div class="wellness-card">
+                <h2 class="text-xl font-semibold text-wellness-800 mb-4">Misiones diarias</h2>
+                <div class="space-y-3" id="missions-container">
+                    <!-- Missions will be generated here -->
+                </div>
+                <div id="completion-message" class="mt-4 p-4 bg-wellness-100 rounded-xl text-center hidden">
+                    <h3 class="font-semibold text-wellness-800 mb-1">¡Fantástico! 🎉</h3>
+                    <p class="text-wellness-600 text-sm">Has completado todas las misiones de hoy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Onboarding logic
+        let currentStep = 0;
+        let userPreferences = {};
+        let gameState = {
+            hearts: 2,
+            petHappiness: 'neutral',
+            completedMissionsToday: 0,
+            totalMissionsCompleted: 0,
+            missions: []
+        };
+
+        const questions = [
+            {
+                id: 'objective',
+                title: '¿Cuál es tu objetivo principal?',
+                subtitle: 'Elige el área que más te interesa mejorar',
+                icon: '🎯',
+                options: [
+                    { id: 'energy', label: 'Más energía', icon: '⚡', description: 'Sentirte más activo/a durante el día' },
+                    { id: 'stress', label: 'Menos estrés', icon: '🧘', description: 'Encontrar momentos de calma y relajación' },
+                    { id: 'movement', label: 'Más movimiento', icon: '🏃', description: 'Incorporar actividad física regular' }
+                ]
+            },
+            {
+                id: 'availability',
+                title: '¿Cuánto tiempo tienes disponible?',
+                subtitle: 'Para dedicar a tu bienestar cada día',
+                icon: '⏰',
+                options: [
+                    { id: 'low', label: '5-10 minutos', icon: '⏱️', description: 'Pequeños momentos entre actividades' },
+                    { id: 'medium', label: '10-20 minutos', icon: '⏰', description: 'Un momento dedicado en tu rutina' },
+                    { id: 'high', label: '20+ minutos', icon: '🕐', description: 'Tiempo suficiente para actividades completas' }
+                ]
+            },
+            {
+                id: 'intensity',
+                title: '¿Qué intensidad prefieres?',
+                subtitle: 'Para tus actividades de bienestar',
+                icon: '⚡',
+                options: [
+                    { id: 'gentle', label: 'Suave', icon: '🌱', description: 'Actividades relajantes y suaves' },
+                    { id: 'normal', label: 'Moderada', icon: '🌿', description: 'Un equilibrio entre calma y energía' },
+                    { id: 'active', label: 'Activa', icon: '🌳', description: 'Actividades más dinámicas y energéticas' }
+                ]
+            },
+            {
+                id: 'style',
+                title: '¿Qué estilo te motiva más?',
+                subtitle: 'Para mantenerte comprometido/a',
+                icon: '💖',
+                options: [
+                    { id: 'mindful', label: 'Mindfulness', icon: '🧘‍♀️', description: 'Ejercicios de atención plena y respiración' },
+                    { id: 'creative', label: 'Creativo', icon: '🎨', description: 'Actividades artísticas y expresivas' },
+                    { id: 'social', label: 'Social', icon: '👥', description: 'Compartir progreso y conectar con otros' }
+                ]
+            }
+        ];
+
+        function updateOnboardingUI() {
+            const question = questions[currentStep];
+            const progress = ((currentStep + 1) / questions.length) * 100;
+            
+            document.getElementById('step-counter').textContent = `${currentStep + 1} de ${questions.length}`;
+            document.getElementById('onboarding-progress').style.width = `${progress}%`;
+            
+            document.getElementById('question-icon').textContent = question.icon;
+            document.getElementById('question-title').textContent = question.title;
+            document.getElementById('question-subtitle').textContent = question.subtitle;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn w-full p-4 rounded-xl border-2 border-gray-200 text-left hover:border-wellness-300 hover:bg-gray-50 transition-all';
+                button.dataset.value = option.id;
+                button.innerHTML = `
+                    <div class="flex items-start space-x-3">
+                        <span class="text-2xl">${option.icon}</span>
+                        <div>
+                            <h3 class="font-semibold text-gray-900">${option.label}</h3>
+                            <p class="text-sm text-gray-600 mt-1">${option.description}</p>
+                        </div>
+                    </div>
+                `;
+                
+                button.addEventListener('click', () => selectOption(question.id, option.id, button));
+                container.appendChild(button);
+            });
+            
+            document.getElementById('prev-btn').disabled = currentStep === 0;
+            document.getElementById('prev-btn').className = currentStep === 0 
+                ? 'text-wellness-600 px-4 py-2 rounded-lg opacity-50 cursor-not-allowed'
+                : 'text-wellness-600 px-4 py-2 rounded-lg hover:bg-wellness-50 transition-all';
+        }
+
+        function selectOption(questionId, optionId, button) {
+            // Remove selection from other buttons
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.className = 'option-btn w-full p-4 rounded-xl border-2 border-gray-200 text-left hover:border-wellness-300 hover:bg-gray-50 transition-all';
+            });
+            
+            // Highlight selected button
+            button.className = 'option-btn w-full p-4 rounded-xl border-2 border-wellness-500 bg-wellness-50 text-left transition-all';
+            
+            // Store answer
+            userPreferences[questionId] = optionId;
+            
+            // Enable next button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = false;
+            nextBtn.className = 'wellness-button';
+        }
+
+        function nextStep() {
+            if (currentStep < questions.length - 1) {
+                currentStep++;
+                updateOnboardingUI();
+                
+                // Reset next button
+                const nextBtn = document.getElementById('next-btn');
+                nextBtn.disabled = true;
+                nextBtn.className = 'wellness-button opacity-50 cursor-not-allowed';
+            } else {
+                // Complete onboarding
+                completeOnboarding();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateOnboardingUI();
+                
+                // Check if current step has an answer
+                const currentQuestion = questions[currentStep];
+                if (userPreferences[currentQuestion.id]) {
+                    const selectedValue = userPreferences[currentQuestion.id];
+                    const selectedButton = document.querySelector(`[data-value="${selectedValue}"]`);
+                    if (selectedButton) {
+                        selectOption(currentQuestion.id, selectedValue, selectedButton);
+                    }
+                }
+            }
+        }
+
+        function completeOnboarding() {
+            generateMissions();
+            document.getElementById('onboarding').classList.add('hidden');
+            document.getElementById('home').classList.remove('hidden');
+            updateHomeUI();
+        }
+
+        function generateMissions() {
+            const missionTemplates = {
+                energy: [
+                    { id: 1, title: '5 respiraciones profundas', duration: '2 min', type: 'breathing', completed: false, icon: '🫁' },
+                    { id: 2, title: 'Estiramiento suave', duration: '5 min', type: 'movement', completed: false, icon: '🤸‍♀️' },
+                    { id: 3, title: 'Caminar al aire libre', duration: '10 min', type: 'movement', completed: false, icon: '🚶‍♀️' }
+                ],
+                stress: [
+                    { id: 1, title: 'Meditación guiada', duration: '8 min', type: 'mindfulness', completed: false, icon: '🧘‍♀️' },
+                    { id: 2, title: 'Escuchar música relajante', duration: '5 min', type: 'relaxation', completed: false, icon: '🎵' },
+                    { id: 3, title: 'Escribir 3 cosas positivas', duration: '3 min', type: 'gratitude', completed: false, icon: '📝' }
+                ],
+                movement: [
+                    { id: 1, title: 'Escaleras en lugar de ascensor', duration: '2 min', type: 'movement', completed: false, icon: '🏃‍♀️' },
+                    { id: 2, title: 'Ejercicios de escritorio', duration: '5 min', type: 'exercise', completed: false, icon: '💪' },
+                    { id: 3, title: 'Baile libre', duration: '8 min', type: 'movement', completed: false, icon: '💃' }
+                ]
+            };
+            
+            gameState.missions = missionTemplates[userPreferences.objective] || missionTemplates.energy;
+        }
+
+        function completeMission(missionId) {
+            const mission = gameState.missions.find(m => m.id === missionId);
+            if (mission && !mission.completed) {
+                mission.completed = true;
+                gameState.hearts++;
+                gameState.completedMissionsToday++;
+                gameState.totalMissionsCompleted++;
+                
+                updateHomeUI();
+                
+                // Animation feedback
+                document.getElementById('hearts-count').classList.add('bounce');
+                setTimeout(() => {
+                    document.getElementById('hearts-count').classList.remove('bounce');
+                }, 500);
+            }
+        }
+
+        function feedPet() {
+            if (gameState.hearts > 0) {
+                gameState.hearts--;
+                gameState.petHappiness = 'happy';
+                updateHomeUI();
+                
+                // Animation feedback
+                document.getElementById('pet-emoji').classList.add('wiggle');
+                setTimeout(() => {
+                    document.getElementById('pet-emoji').classList.remove('wiggle');
+                }, 500);
+            }
+        }
+
+        function updateHomeUI() {
+            // Update hearts
+            document.getElementById('hearts-count').textContent = gameState.hearts;
+            document.getElementById('total-missions').textContent = gameState.totalMissionsCompleted;
+            
+            // Update pet
+            const petEmojis = {
+                happy: '🐱',
+                sad: '😿',
+                neutral: '😺'
+            };
+            
+            const petMessages = {
+                happy: '¡Estoy muy feliz! Gracias por cuidarme 💖',
+                sad: 'Me siento un poco triste... ¿me das cariño?',
+                neutral: 'Hola! Soy tu compañero de bienestar 😊'
+            };
+            
+            document.getElementById('pet-emoji').textContent = petEmojis[gameState.petHappiness];
+            document.getElementById('pet-message').textContent = petMessages[gameState.petHappiness];
+            
+            // Update hearts display
+            const heartsDisplay = document.getElementById('hearts-display');
+            heartsDisplay.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const heart = document.createElement('span');
+                heart.className = `text-2xl ${i < gameState.hearts ? '' : 'opacity-30'}`;
+                heart.textContent = '💖';
+                heartsDisplay.appendChild(heart);
+            }
+            
+            // Update feed button
+            const feedBtn = document.getElementById('feed-pet-btn');
+            feedBtn.disabled = gameState.hearts === 0;
+            feedBtn.className = gameState.hearts === 0 
+                ? 'wellness-button opacity-50 cursor-not-allowed' 
+                : 'wellness-button';
+                
+            // Update progress
+            const completedCount = gameState.missions.filter(m => m.completed).length;
+            const progressPercentage = Math.round((completedCount / gameState.missions.length) * 100);
+            
+            document.getElementById('progress-text').textContent = `${completedCount} de ${gameState.missions.length} misiones completadas`;
+            document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
+            document.getElementById('daily-progress').style.width = `${progressPercentage}%`;
+            
+            // Update motivational message
+            const messages = {
+                100: '🎉 ¡Increíble! Has completado todas las misiones de hoy',
+                66: '💪 ¡Excelente progreso! Ya casi terminas',
+                33: '🌟 ¡Buen trabajo! Sigues por buen camino',
+                0: '🚀 ¡Comienza tu día de bienestar!'
+            };
+            
+            let message = messages[0];
+            if (progressPercentage === 100) message = messages[100];
+            else if (progressPercentage >= 66) message = messages[66];
+            else if (progressPercentage >= 33) message = messages[33];
+            
+            document.getElementById('motivational-message').textContent = message;
+            
+            // Update missions
+            const container = document.getElementById('missions-container');
+            container.innerHTML = '';
+            
+            gameState.missions.forEach(mission => {
+                const missionDiv = document.createElement('div');
+                missionDiv.className = `mission-card ${mission.completed ? 'completed' : ''}`;
+                missionDiv.innerHTML = `
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-br from-wellness-100 to-wellness-200 flex items-center justify-center text-2xl">
+                            ${mission.icon}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-semibold ${mission.completed ? 'text-wellness-800 line-through' : 'text-gray-900'}">${mission.title}</h3>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="text-sm text-gray-600">⏱️ ${mission.duration}</span>
+                            </div>
+                        </div>
+                        <button class="flex-shrink-0 p-2 rounded-full transition-all ${mission.completed ? 'bg-wellness-500 text-white' : 'bg-gray-100 hover:bg-wellness-100 text-gray-500 hover:text-wellness-600'}" onclick="completeMission(${mission.id})" ${mission.completed ? 'disabled' : ''}>
+                            ${mission.completed ? '✅' : '○'}
+                        </button>
+                    </div>
+                    ${!mission.completed ? '<div class="absolute -top-2 -right-2 bg-wellness-heart text-white text-xs px-2 py-1 rounded-full font-semibold">+1 💖</div>' : ''}
+                `;
+                container.appendChild(missionDiv);
+            });
+            
+            // Show completion message
+            const completionMessage = document.getElementById('completion-message');
+            if (completedCount === gameState.missions.length) {
+                completionMessage.classList.remove('hidden');
+            } else {
+                completionMessage.classList.add('hidden');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('next-btn').addEventListener('click', nextStep);
+        document.getElementById('prev-btn').addEventListener('click', prevStep);
+        document.getElementById('feed-pet-btn').addEventListener('click', feedPet);
+
+        // Initialize
+        updateOnboardingUI();
+    </script>
+</body>
+</html>
